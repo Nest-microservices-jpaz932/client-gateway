@@ -6,12 +6,17 @@ import {
     Param,
     Inject,
     ParseUUIDPipe,
+    Query,
+    Patch,
 } from '@nestjs/common';
 import { ORDERS_SERVICE } from 'src/config/services';
 import { ClientGrpcProxy, RpcException } from '@nestjs/microservices';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { firstValueFrom } from 'rxjs';
 import { Order } from './interfaces/order.interface';
+import { OrderPaginationDto } from './dto/pagination-order.dto';
+import { PaginationDto } from 'src/common';
+import { StatusOrderDto } from './dto/status-order.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -25,15 +30,45 @@ export class OrdersController {
     }
 
     @Get()
-    findAll() {
-        return this.ordersClient.send({ cmd: 'findAllOrders' }, {});
+    findAll(@Query() paginationDto: OrderPaginationDto) {
+        return this.ordersClient.send({ cmd: 'findAllOrders' }, paginationDto);
     }
 
-    @Get(':id')
+    @Get('id/:id')
     async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Order> {
         try {
             return await firstValueFrom<Order>(
                 this.ordersClient.send({ cmd: 'findOneOrder' }, { id }),
+            );
+        } catch (error) {
+            throw new RpcException(error as RpcException);
+        }
+    }
+
+    @Get(':status')
+    findByStatus(
+        @Param() statusDto: StatusOrderDto,
+        @Query() paginationDto: PaginationDto,
+    ) {
+        try {
+            return this.ordersClient.send(
+                { cmd: 'findAllOrders' },
+                { status: statusDto.status, ...paginationDto },
+            );
+        } catch (error) {
+            throw new RpcException(error as RpcException);
+        }
+    }
+
+    @Patch(':id')
+    update(
+        @Param('id', ParseUUIDPipe) id: string,
+        @Body() updateOrderDto: StatusOrderDto,
+    ) {
+        try {
+            return this.ordersClient.send(
+                { cmd: 'changeOrderStatus' },
+                { id, status: updateOrderDto.status },
             );
         } catch (error) {
             throw new RpcException(error as RpcException);
