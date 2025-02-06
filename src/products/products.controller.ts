@@ -13,7 +13,7 @@ import {
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { catchError } from 'rxjs';
 import { PaginationDto } from 'src/common';
-import { PRODUCT_SERVICE } from 'src/config';
+import { PRODUCT_SERVICE } from 'src/config/services';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
@@ -43,14 +43,6 @@ export class ProductsController {
                 throw new RpcException(error);
             }),
         );
-        // try {
-        //     const product = await firstValueFrom(
-        //         this.productsClient.send({ cmd: 'findOneProduct' }, { id }),
-        //     );
-        //     return product;
-        // } catch (error) {
-        //     throw new RpcException(error);
-        // }
     }
 
     @Patch(':id')
