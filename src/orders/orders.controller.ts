@@ -10,7 +10,7 @@ import {
     Patch,
 } from '@nestjs/common';
 import { ORDERS_SERVICE } from 'src/config/services';
-import { ClientGrpcProxy, RpcException } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { firstValueFrom } from 'rxjs';
 import { Order } from './interfaces/order.interface';
@@ -21,7 +21,7 @@ import { StatusOrderDto } from './dto/status-order.dto';
 @Controller('orders')
 export class OrdersController {
     constructor(
-        @Inject(ORDERS_SERVICE) private readonly ordersClient: ClientGrpcProxy,
+        @Inject(ORDERS_SERVICE) private readonly ordersClient: ClientProxy,
     ) {}
 
     @Post()
