@@ -9,6 +9,18 @@ export class RpcCustomExceptionFilter implements ExceptionFilter {
         const response = context.getResponse<Response>();
 
         const rpcError = exception.getError();
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        const rpcErrorString = rpcError.toString();
+
+        if (rpcErrorString.includes('Empty response')) {
+            return response.status(400).json({
+                statusCode: 500,
+                message: rpcErrorString.substring(
+                    0,
+                    rpcErrorString.indexOf('(') - 1,
+                ),
+            });
+        }
 
         if (
             typeof rpcError === 'object' &&
