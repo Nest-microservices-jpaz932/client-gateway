@@ -7,7 +7,7 @@
 4. Run necessary microservices
 5. Run `npm run start:dev`
 
-## Nats
+## Nats 
 ```
 docker run -d --name nats-server -p 4222:4222 -p 8222:8222 nats
 ```
